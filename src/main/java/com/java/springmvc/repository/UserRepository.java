@@ -8,5 +8,7 @@ import com.java.springmvc.domain.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    public boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
+
+    User findByEmail(String email);
 }
