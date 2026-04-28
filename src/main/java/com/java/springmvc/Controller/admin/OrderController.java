@@ -8,6 +8,6 @@ public class OrderController {
 
     @RequestMapping("/admin/order")
     public String getDashboardAdmin() {
-        return "/admin/order/view-order";
+        return "admin/order/view-order";
     }
 }

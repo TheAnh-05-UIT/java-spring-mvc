@@ -31,14 +31,14 @@ public class ProductController {
     public String getDashboardProduct(Model model) {
         List<Product> products = this.productService.handleGetAllProduct();
         model.addAttribute("products", products);
-        return "/admin/product/view-product";
+        return "admin/product/view-product";
     }
 
     @GetMapping("/admin/product/create")
     public String getCreateProductPage(
             Model model) {
         model.addAttribute("newProduct", new Product());
-        return "/admin/product/create-product";
+        return "admin/product/create-product";
     }
 
     @PostMapping("/admin/product/create")
@@ -57,7 +57,7 @@ public class ProductController {
             Model model) {
         Product productById = this.productService.handleGetProductById(id);
         model.addAttribute("productById", productById);
-        return "/admin/product/detail-product";
+        return "admin/product/detail-product";
     }
 
     @GetMapping("/admin/product/update/{id}")
@@ -65,7 +65,7 @@ public class ProductController {
             @PathVariable("id") Long id) {
         Product updateProductById = this.productService.handleGetProductById(id);
         model.addAttribute("updateProduct", updateProductById);
-        return "/admin/product/update-product";
+        return "admin/product/update-product";
     }
 
     @PostMapping("/admin/product/update")
@@ -81,7 +81,7 @@ public class ProductController {
             @PathVariable("id") Long id) {
         model.addAttribute("id", id);
         model.addAttribute("deleteProduct", new Product());
-        return "/admin/product/delete-product";
+        return "admin/product/delete-product";
     }
 
     @PostMapping("/admin/product/delete")
