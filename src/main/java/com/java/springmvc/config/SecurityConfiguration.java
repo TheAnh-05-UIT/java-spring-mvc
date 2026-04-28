@@ -15,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.java.springmvc.service.CustomUserDetailsService;
 import com.java.springmvc.service.UserService;
 
+import jakarta.servlet.DispatcherType;
+
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
@@ -29,10 +31,20 @@ public class SecurityConfiguration {
         return new CustomUserDetailsService(userService);
     }
 
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.formLogin((form) -> form
-                .loginPage("/login")
-                .permitAll());
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD,
+                                DispatcherType.INCLUDE)
+                        .permitAll()
+                        .requestMatchers("/", "/login", "/client/**", "/js/**", "/css/**", "/images/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .formLogin((form) -> form
+                        .loginPage("/login")
+                        .failureUrl("/login?error")
+                        .permitAll());
         return http.build();
     }
 
