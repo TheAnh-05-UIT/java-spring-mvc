@@ -24,7 +24,7 @@
                 </div>
                 <div class="sb-sidenav-footer">
                     <div class="small">Logged in as:</div>
-                    <%= request.getSession().getAttribute("user") %>
+                    <c:out value="${sessionScope.fullName}" />
                 </div>
             </nav>
         </div>
