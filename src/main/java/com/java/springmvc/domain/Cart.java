@@ -1,5 +1,7 @@
 package com.java.springmvc.domain;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 
 @Entity
 @Table(name = "carts")
@@ -17,6 +20,7 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Min(value = 0)
     private Long sum;
 
     @OneToOne
@@ -24,7 +28,7 @@ public class Cart {
     private User user;
 
     @OneToMany(mappedBy = "cart")
-    private CartDetail cartDetail;
+    private List<CartDetail> cartDetail;
 
     public Long getId() {
         return id;
@@ -40,6 +44,22 @@ public class Cart {
 
     public void setSum(Long sum) {
         this.sum = sum;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<CartDetail> getCartDetail() {
+        return cartDetail;
+    }
+
+    public void setCartDetail(List<CartDetail> cartDetail) {
+        this.cartDetail = cartDetail;
     }
 
 }
