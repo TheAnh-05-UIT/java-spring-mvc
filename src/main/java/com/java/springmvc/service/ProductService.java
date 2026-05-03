@@ -6,7 +6,12 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.java.springmvc.domain.Cart;
+import com.java.springmvc.domain.CartDetail;
 import com.java.springmvc.domain.Product;
+import com.java.springmvc.domain.User;
+import com.java.springmvc.repository.CartDetailRepository;
+import com.java.springmvc.repository.CartRepository;
 import com.java.springmvc.repository.ProductRepository;
 
 @Service
@@ -14,11 +19,20 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UploadFileService uploadFileService;
+    private final UserService userService;
+    private final CartRepository cartRepository;
+    private final CartDetailRepository cartDetailRepository;
 
     public ProductService(ProductRepository productRepository,
-            UploadFileService uploadFileService) {
+            UploadFileService uploadFileService,
+            UserService userService,
+            CartRepository cartRepository,
+            CartDetailRepository cartDetailRepository) {
         this.productRepository = productRepository;
         this.uploadFileService = uploadFileService;
+        this.userService = userService;
+        this.cartRepository = cartRepository;
+        this.cartDetailRepository = cartDetailRepository;
     }
 
     public List<Product> handleGetAllProduct() {
@@ -61,6 +75,35 @@ public class ProductService {
         Product deleteProductById = this.handleGetProductById(id);
         if (deleteProductById != null) {
             this.productRepository.deleteById(id);
+        }
+    }
+
+    public void handleAddProductToCart(String email, Long productId) {
+        User user = this.userService.getUserByUserEmail(email);
+
+        if (user != null) {
+            // nếu người dùng tồn tại thì tạo cart
+            Cart cart = this.cartRepository.findByUser(user);
+            // nếu người dùng chưa có cart thì tạo mới
+            if (cart == null) {
+                Cart newCart = new Cart();
+                newCart.setUser(user);
+                newCart.setSum(null);
+                cart = this.cartRepository.save(newCart);
+            }
+
+            // Nếu đã có cart tiến hành lưu
+
+            Product product = this.handleGetProductById(productId);
+
+            if (product != null) {
+                CartDetail newCartDetail = new CartDetail();
+                newCartDetail.setCart(cart);
+                newCartDetail.setProduct(product);
+                newCartDetail.setPrice(product.getPrice());
+                newCartDetail.setQuantity(null);
+                this.cartDetailRepository.save(newCartDetail);
+            }
         }
     }
 }
