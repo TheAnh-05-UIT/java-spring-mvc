@@ -14,6 +14,8 @@ import com.java.springmvc.repository.CartDetailRepository;
 import com.java.springmvc.repository.CartRepository;
 import com.java.springmvc.repository.ProductRepository;
 
+import jakarta.servlet.http.HttpSession;
+
 @Service
 public class ProductService {
 
@@ -78,7 +80,7 @@ public class ProductService {
         }
     }
 
-    public void handleAddProductToCart(String email, Long productId) {
+    public void handleAddProductToCart(String email, Long productId, HttpSession session) {
         User user = this.userService.getUserByUserEmail(email);
 
         if (user != null) {
@@ -88,21 +90,29 @@ public class ProductService {
             if (cart == null) {
                 Cart newCart = new Cart();
                 newCart.setUser(user);
-                newCart.setSum(null);
+                newCart.setSum(0L);
                 cart = this.cartRepository.save(newCart);
             }
 
             // Nếu đã có cart tiến hành lưu
-
             Product product = this.handleGetProductById(productId);
+            CartDetail cartDetail = this.cartDetailRepository.findByCartAndProduct(cart, product);
 
-            if (product != null) {
+            if (cartDetail == null) {
                 CartDetail newCartDetail = new CartDetail();
                 newCartDetail.setCart(cart);
                 newCartDetail.setProduct(product);
                 newCartDetail.setPrice(product.getPrice());
-                newCartDetail.setQuantity(null);
+                newCartDetail.setQuantity(1L);
                 this.cartDetailRepository.save(newCartDetail);
+
+                long sum = cart.getSum() + 1;
+                cart.setSum(sum);
+                this.cartRepository.save(cart);
+                session.setAttribute("sum", sum);
+            } else {
+                cartDetail.setQuantity(cartDetail.getQuantity() + 1);
+                this.cartDetailRepository.save(cartDetail);
             }
         }
     }
